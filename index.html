@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>SudokuON!</title>
+  <meta name="description" content="SudokuON!: Sudoku no navegador, com 4 variantes (Clássico, Diagonal, Mini 6x6 e Mini 4x4), 6 níveis, notas, dicas explicadas passo a passo e jogo do dia. Grátis e funciona offline." />
+  <meta name="theme-color" content="#007ACC" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <script>/* aplica tema e animações antes de pintar (evita "piscar") */
+  try{var c={};try{c=JSON.parse(localStorage.getItem('sudokuon.cfg')||'{}')||{}}catch(e){}var d=document.documentElement,r=c.reduzir,t=c.tema;
+  if(t!=='escuro'&&t!=='claro')t=c.escuro===true?'escuro':null;
+  if(r===undefined||r===null)r=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(t?t==='escuro':matchMedia('(prefers-color-scheme: dark)').matches)d.setAttribute('data-tema','escuro');if(r)d.setAttribute('data-reduzir','1');}catch(e){}</script>
+  <link rel="stylesheet" href="on.css" />
+  <link rel="stylesheet" href="colorido.css" />
+  <script defer src="on.js"></script>
+  <script defer src="regras.js"></script>
+  <script defer src="tecnicas.js"></script>
+  <script defer src="gerador.js"></script>
+  <script defer src="exemplos.js"></script>
+  <script defer src="textos.js"></script>
+  <script defer src="javinhas.js"></script>
+</head>
+<body>
+  <header>
+    <button id="menu-btn" type="button" aria-label="Abrir menu" aria-controls="drawer" data-abrir="drawer">☰</button>
+    <h1>SudokuON!</h1>
+    <button id="howto-btn" class="header-btn" type="button" aria-haspopup="dialog" data-abrir="howto-modal">Como Jogar</button>
+  </header>
+
+  <div id="overlay" hidden></div>
+
+  <!-- Modal "Como Jogar": usar o site, Sudoku e técnicas -->
+  <div id="howto-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="howto-title">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h2 id="howto-title">Como Jogar SudokuON!</h2>
+        <button class="modal-x" type="button" aria-label="Fechar" data-fechar>✕</button>
+      </div>
+      <div class="abas" role="tablist" aria-label="Seções da ajuda">
+        <button class="aba" id="aba-site" type="button" role="tab" aria-selected="true" aria-controls="painel-site">O site</button>
+        <button class="aba" id="aba-sudoku" type="button" role="tab" aria-selected="false" aria-controls="painel-sudoku" tabindex="-1">Sudoku</button>
+        <button class="aba" id="aba-tec" type="button" role="tab" aria-selected="false" aria-controls="painel-tec" tabindex="-1">Técnicas</button>
+      </div>
+      <div class="modal-body texto-ajuda" id="painel-site" role="tabpanel" aria-labelledby="aba-site"></div>
+      <div class="modal-body texto-ajuda" id="painel-sudoku" role="tabpanel" aria-labelledby="aba-sudoku" hidden></div>
+      <div class="modal-body texto-ajuda" id="painel-tec" role="tabpanel" aria-labelledby="aba-tec" hidden></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" type="button" data-fechar data-foco>Entendi!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal "Escolher partida" -->
+  <div id="partida-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="partida-title">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h2 id="partida-title">Escolher partida</h2>
+        <button class="modal-x" type="button" aria-label="Fechar" data-fechar>✕</button>
+      </div>
+      <div class="modal-body" id="partida-corpo">
+        <h3 class="sec-tit" id="sec-var">Variante</h3>
+        <div class="tiles" id="tiles-var" role="group" aria-labelledby="sec-var"></div>
+        <h3 class="sec-tit" id="sec-niv">Nível</h3>
+        <div class="seg seg-niveis" id="op-niveis" role="group" aria-labelledby="sec-niv"></div>
+        <p class="nivel-nome" id="niveis-desc"></p>
+        <h3 class="sec-tit" id="sec-num">Número do jogo</h3>
+        <div class="linha-num">
+          <input id="num-jogo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="9" autocomplete="off" placeholder="sorteado" aria-labelledby="sec-num" />
+          <button id="num-sortear" class="btn btn-secondary" type="button">Sortear</button>
+          <button id="num-dia" class="btn btn-secondary" type="button">Jogo do dia</button>
+        </div>
+        <p class="nivel-nome" id="num-desc">O mesmo número, variante e nível dão sempre a mesma grade, em qualquer aparelho. Deixe vazio para sortear.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" type="button" id="partida-jogar" data-foco>Jogar</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <section id="game-area" aria-label="Sudoku">
+      <button id="modo-btn" type="button" aria-haspopup="dialog" data-abrir="partida-modal">
+        <span id="modo-mini" aria-hidden="true"></span>
+        <span class="modo-txt"><span class="nivel-rotulo">Partida</span><b id="modo-nome">Clássico, Fácil</b><span id="modo-num"></span></span>
+        <span class="modo-trocar">Trocar<span class="ic" id="modo-chevron"></span></span>
+      </button>
+
+      <div id="hud">
+        <button class="hud-box" id="tempo-btn" type="button" aria-label="Tempo. Toque para pausar"><span class="hud-label" id="hud-r1">Tempo</span><b id="hud-v1">0:00</b></button>
+        <div class="hud-box" id="hud-erros"><span class="hud-label" id="hud-r2">Erros</span><b id="hud-v2">0</b></div>
+        <div class="hud-box"><span class="hud-label" id="hud-r3">Dicas</span><b id="hud-v3">0</b></div>
+      </div>
+
+      <div id="mesa-box">
+        <div id="tab" role="group" aria-label="Tabuleiro de Sudoku"></div>
+        <div id="tela" hidden>
+          <div class="tela-card" role="dialog" aria-live="polite">
+            <h2 id="tela-titulo"></h2>
+            <div id="tela-corpo"></div>
+            <button id="tela-btn" class="btn btn-primary" type="button">Continuar</button>
+            <button id="tela-btn2" class="btn btn-secondary" type="button" hidden>Ver a grade</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="entrada">
+        <div id="pad" role="group" aria-label="Números"></div>
+        <div id="ferramentas">
+          <button id="notas-btn" class="tool-btn" type="button" aria-pressed="false">Notas</button>
+          <button id="apagar-btn" class="tool-btn" type="button">Apagar</button>
+          <button id="desfazer-btn" class="tool-btn" type="button">Desfazer</button>
+          <button id="refazer-btn" class="tool-btn" type="button">Refazer</button>
+          <button id="dica-btn" class="tool-btn" type="button">Dica</button>
+        </div>
+      </div>
+
+      <div id="acoes" hidden></div>
+
+      <div id="message-container"><div id="message-area" role="status" aria-live="polite"></div></div>
+
+      <button id="restart-btn" class="btn btn-primary" type="button">Nova partida</button>
+
+      <div id="config" aria-label="Ajudas">
+        <div class="acc" id="acc-ajuda">
+          <button class="acc-btn" id="ajuda-btn" type="button" aria-expanded="false" aria-controls="ajuda-painel">
+            <span class="opc-txt"><span class="nivel-rotulo">Ajudas</span><b id="ajuda-atual">Erros na hora</b></span>
+            <span class="ic" id="ajuda-chevron"></span>
+          </button>
+          <div class="acc-panel" id="ajuda-painel" role="region" aria-labelledby="ajuda-btn">
+            <div>
+              <div class="linha-cfg">
+                <span class="rotulo-cfg">Erros</span>
+                <div id="op-erros" class="seg" role="group" aria-label="Quando mostrar os erros">
+                  <button class="seg-btn" type="button" data-v="hora">Na hora</button>
+                  <button class="seg-btn" type="button" data-v="verificar">Só ao verificar</button>
+                </div>
+              </div>
+              <div class="linha-cfg">
+                <span class="rotulo-cfg">Repetidos</span>
+                <div id="op-conf" class="seg" role="group" aria-label="Marcar números repetidos">
+                  <button class="seg-btn" type="button" data-v="sim">Marcar</button>
+                  <button class="seg-btn" type="button" data-v="nao">Não marcar</button>
+                </div>
+              </div>
+              <div class="linha-cfg">
+                <span class="rotulo-cfg">Iguais</span>
+                <div id="op-igual" class="seg" role="group" aria-label="Realçar números iguais">
+                  <button class="seg-btn" type="button" data-v="sim">Realçar</button>
+                  <button class="seg-btn" type="button" data-v="nao">Não realçar</button>
+                </div>
+              </div>
+              <div class="linha-cfg">
+                <span class="rotulo-cfg">Notas</span>
+                <div id="op-limpa" class="seg" role="group" aria-label="Notas ao colocar um número">
+                  <button class="seg-btn" type="button" data-v="sim">Limpar sozinho</button>
+                  <button class="seg-btn" type="button" data-v="nao">Manter</button>
+                </div>
+              </div>
+              <div class="ajuda-botoes">
+                <button id="verificar-btn" class="btn btn-secondary" type="button">Verificar a grade</button>
+                <button id="anotar-btn" class="btn btn-secondary" type="button">Anotar tudo</button>
+              </div>
+              <p id="ajuda-aviso">As ajudas valem na hora e ficam salvas neste aparelho.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="assinatura-final">© Christian, 2026</p>
+  </footer>
+</body>
+</html>

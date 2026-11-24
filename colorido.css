@@ -1,0 +1,736 @@
+/* ==========================================================================
+   SudokuON! - colorido.css (só o que é do jogo)
+   Header, menu, modais, rodapé, botões, acordeão e scrollbar vêm de on.css.
+
+   Índice
+   1. Variáveis e layout
+   2. Botão da partida e placar
+   3. Tabuleiro
+   4. Números, ferramentas e painel de dica
+   5. Tela sobre o tabuleiro (pausa, resultado)
+   6. Ajudas, escolher partida e Como Jogar
+   7. Modo escuro
+   8. Responsividade
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Variáveis e layout
+   ========================================================================== */
+:root {
+    --mesa-borda: rgba(144, 202, 249, 0.3);
+    --mesa-fundo: rgba(6, 47, 81, 0.45);
+
+    /* papel do tabuleiro */
+    --t-fundo: #f7fbff;
+    --t-fina: #b3c8dc;
+    --t-grossa: #174a7c;
+    --t-dado: #0b2a4a;
+    --t-meu: #0d5cb6;
+    --t-nota: #3f6385;
+    --t-rel: #e2effa;
+    --t-igual: #c5dff7;
+    --t-sel: #8fc4f3;
+    --t-anel: #0b4f9c;
+    --t-diag: rgba(38, 150, 85, 0.24);
+    --t-erro-fundo: #fcdede;
+    --t-erro: #b3261e;
+    --t-foco: #ffe08a;
+    --t-alvo: #ffc2c2;
+    --t-nota-dica: #6b4e00;
+}
+
+html[data-tema="escuro"] {
+    --mesa-fundo: rgba(3, 12, 24, 0.7);
+    --t-fundo: #0d1f33;
+    --t-fina: #28435f;
+    --t-grossa: #8fc2ee;
+    --t-dado: #e6f2fd;
+    --t-meu: #7dbbf5;
+    --t-nota: #a9cbe9;
+    --t-rel: #14304d;
+    --t-igual: #1f4b78;
+    --t-sel: #2c6aa8;
+    --t-anel: #cfe6fb;
+    --t-diag: rgba(80, 210, 140, 0.2);
+    --t-erro-fundo: #46202a;
+    --t-erro: #ff9b92;
+    --t-foco: #6a5610;
+    --t-alvo: #6a2a2a;
+    --t-nota-dica: #ffe39a;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px 6px 4px;
+}
+
+#game-area {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* ==========================================================================
+   2. Botão da partida e placar
+   ========================================================================== */
+#modo-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    padding: 6px 12px 6px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--mesa-borda);
+    background: var(--mesa-fundo);
+    color: var(--light-blue);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+#modo-btn:active { transform: scale(0.99); }
+#modo-btn:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+
+#modo-mini { flex-shrink: 0; display: block; width: 46px; height: 46px; }
+#modo-mini .mini { display: block; width: 100%; height: 100%; }
+
+.modo-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+
+.nivel-rotulo {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #bcdcf7;
+}
+
+#modo-nome { color: #fff; font-size: 1.1rem; line-height: 1.15; overflow-wrap: break-word; }
+#modo-num { font-size: 0.8rem; color: var(--light-blue); line-height: 1.25; overflow-wrap: anywhere; }
+
+.modo-trocar {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--light-blue);
+}
+
+#hud { display: flex; gap: 8px; }
+
+.hud-box {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--mesa-borda);
+    background: var(--mesa-fundo);
+    min-height: 54px;
+    color: inherit;
+    font: inherit;
+}
+
+button.hud-box { cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+button.hud-box:active { transform: scale(0.98); }
+button.hud-box:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+
+.hud-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #d3e9fc;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.hud-box b {
+    font-size: 1.2rem;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* ==========================================================================
+   3. Tabuleiro
+   ========================================================================== */
+#mesa-box {
+    position: relative;
+    width: var(--lado, 100%);
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#tab {
+    --cell: calc(100% / var(--n, 9));
+    display: grid;
+    grid-template-columns: repeat(var(--n, 9), 1fr);
+    grid-template-rows: repeat(var(--n, 9), 1fr);
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--t-fundo);
+    outline: 3px solid var(--t-grossa);
+    outline-offset: -1px;
+    border-radius: 2px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    container-type: inline-size;
+}
+
+.cel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-right: 1px solid var(--t-fina);
+    border-bottom: 1px solid var(--t-fina);
+    border-radius: 0;
+    background: var(--t-fundo);
+    color: var(--t-dado);
+    font: inherit;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.cel.bd { border-right: 2px solid var(--t-grossa); }
+.cel.bb { border-bottom: 2px solid var(--t-grossa); }
+.cel.ur { border-right: 0; }
+.cel.ub { border-bottom: 0; }
+.cel.diag { background-image: linear-gradient(var(--t-diag), var(--t-diag)); }
+.cel.rel { background: var(--t-rel); }
+.cel.igual { background: var(--t-igual); }
+.cel.sel { background: var(--t-sel); box-shadow: inset 0 0 0 3px var(--t-anel); z-index: 1; }
+.cel.foco { background: var(--t-foco); }
+.cel.alvo { background: var(--t-alvo); }
+.cel.conf, .cel.erro { background: var(--t-erro-fundo); }
+.cel:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: -3px; z-index: 2; }
+
+.cel .v {
+    font-size: calc(100cqw / var(--n, 9) * 0.62);
+    line-height: 1;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.cel.dado .v { font-weight: 800; color: var(--t-dado); }
+.cel.meu .v { color: var(--t-meu); }
+.cel.conf .v, .cel.erro .v { color: var(--t-erro); }
+.cel.erro .v { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
+
+/* notas: ocupam a célula como um bloco miniatura. Em telas bem pequenas ficam menores que 11px
+   (nove números cabem em 27px); por isso o painel de números destaca as notas da célula escolhida. */
+.nt {
+    display: grid;
+    grid-template-columns: repeat(var(--bc, 3), 1fr);
+    grid-template-rows: repeat(var(--br, 3), 1fr);
+    width: 100%;
+    height: 100%;
+}
+
+.nt i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1;
+    font-size: calc(100cqw / var(--n, 9) / (var(--bc, 3) + 0.4));
+    color: var(--t-nota);
+}
+
+.nt.sobre i { color: var(--t-nota-dica); }
+.nt i.dest { font-weight: 900; color: var(--t-dado); }
+.nt i.sai { color: var(--t-erro); text-decoration: line-through; font-weight: 900; }
+
+.cel.pulso { animation: pulso 0.6s var(--ease); z-index: 3; }
+@keyframes pulso { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.14); } }
+
+#tab.onda .cel { animation: onda 0.7s var(--ease) both; animation-delay: calc(var(--d, 0) * 45ms); }
+@keyframes onda { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.12); background: var(--t-foco); z-index: 3; } }
+
+/* ==========================================================================
+   4. Números, ferramentas e painel de dica
+   ========================================================================== */
+#entrada { display: flex; flex-direction: column; gap: 8px; }
+body.dica-aberta #entrada { display: none; }
+
+#pad { display: grid; grid-template-columns: repeat(var(--cols, 9), 1fr); gap: 6px; }
+#pad.parado { opacity: 0.55; }
+
+.pad-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 46px;
+    padding: 3px 0 2px;
+    border-radius: 10px;
+    border: 2px solid rgba(144, 202, 249, 0.5);
+    background: rgba(227, 242, 253, 0.12);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.pad-btn b { font-size: 1.35rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.pad-btn small { font-size: 0.6875rem; line-height: 1.1; min-height: 0.75rem; color: var(--light-blue); font-weight: 700; }
+.pad-btn:active { background: rgba(227, 242, 253, 0.28); transform: scale(0.95); }
+.pad-btn:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+.pad-btn.feito { opacity: 0.4; }
+.pad-btn.nota-on { background: #1976d2; border-color: #fff; }
+#pad.notas .pad-btn { border-style: dashed; }
+
+#ferramentas { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tool-btn {
+    flex: 1 1 64px;
+    min-width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    min-height: 46px;
+    padding: 4px 4px 3px;
+    background: rgba(227, 242, 253, 0.1);
+    border: 2px solid rgba(144, 202, 249, 0.5);
+    color: var(--light-blue);
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 800;
+    font-size: 0.78rem;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tool-btn:active:not(:disabled) { background: rgba(227, 242, 253, 0.22); transform: scale(0.97); }
+.tool-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.tool-btn:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+.tool-btn[aria-pressed="true"] { background: #1976d2; border-color: #fff; color: #fff; }
+
+#message-container { min-height: 24px; display: flex; align-items: center; justify-content: center; }
+
+#message-area {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.35;
+    color: var(--light-blue);
+}
+
+#acoes {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid rgba(251, 192, 45, 0.75);
+    background: linear-gradient(rgba(251, 192, 45, 0.1), rgba(251, 192, 45, 0.1)), #08233b;
+}
+
+#acoes[hidden] { display: none; }
+.acoes-tit { margin: 0; text-align: center; font-weight: 800; font-size: 1.02rem; color: #ffe082; }
+.acoes-txt { margin: 0; text-align: center; font-weight: 600; font-size: 0.92rem; line-height: 1.45; color: #fff; }
+.acoes-bts { display: flex; gap: 8px; flex-wrap: wrap; }
+.acoes-bts .btn { flex: 1 1 120px; padding: 9px 12px; min-height: 42px; font-size: 0.9rem; }
+#acoes .btn-secondary { color: var(--light-blue); }
+
+#restart-btn { margin-bottom: 0; }
+#config { padding: 0 0 12px; display: flex; flex-direction: column; gap: 8px; }
+
+/* ==========================================================================
+   5. Tela sobre o tabuleiro (pausa, resultado)
+   ========================================================================== */
+#tela {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    overflow-y: auto;
+    background: rgba(6, 30, 56, 0.6);
+    animation: aparece 0.35s var(--ease);
+}
+
+#tela.opaca { background: #08233b; }
+#tela[hidden] { display: none; }
+
+@keyframes aparece { from { opacity: 0; } to { opacity: 1; } }
+
+.tela-card {
+    width: min(100%, 380px);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 16px 14px 14px;
+    border-radius: 14px;
+    border: 2px solid rgba(144, 202, 249, 0.6);
+    background: #0a2a47;
+    color: #fff;
+}
+
+.tela-card h2 { margin: 0; font-size: 1.4rem; }
+.tela-card p { margin: 0; font-size: 0.95rem; color: var(--light-blue); line-height: 1.45; }
+.tela-card .btn { margin-top: 4px; width: 100%; }
+.tela-card .btn[hidden] { display: none; }
+.tela-card .btn-secondary { color: var(--light-blue); }
+.tela-sub { font-size: 0.85rem !important; }
+
+.res { width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.res-motivo { text-align: center; font-weight: 700; }
+
+.res-lin {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(144, 202, 249, 0.1);
+    border: 1px solid rgba(144, 202, 249, 0.3);
+    color: var(--light-blue);
+    font-size: 0.92rem;
+}
+
+.res-lin b { color: #fff; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.res-lin small { grid-column: 1 / -1; color: #ffe082; font-size: 0.8rem; line-height: 1.35; font-weight: 700; }
+
+/* ==========================================================================
+   6. Ajudas, escolher partida e Como Jogar
+   ========================================================================== */
+#ajuda-btn .opc-txt { margin-right: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; flex: 1; text-align: left; }
+#ajuda-btn .opc-txt b { color: #fff; font-size: 1.02rem; line-height: 1.2; }
+.acc-panel > div { padding-top: 4px; }
+.linha-cfg + .linha-cfg { margin-top: 8px; }
+.linha-cfg { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+
+.rotulo-cfg {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #bcdcf7;
+    flex-shrink: 0;
+}
+
+.seg { display: flex; gap: 4px; flex: 1; max-width: 360px; }
+.seg-niveis { flex-wrap: wrap; max-width: none; }
+.seg-niveis .seg-btn { flex: 1 1 130px; }
+
+.seg-btn {
+    flex: 1;
+    background: rgba(227, 242, 253, 0.1);
+    border: 2px solid rgba(144, 202, 249, 0.5);
+    color: var(--light-blue);
+    padding: 6px;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 700;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    min-height: 40px;
+    min-width: 0;
+}
+
+.seg-btn:active:not(:disabled) { background: rgba(227, 242, 253, 0.2); transform: scale(0.96); }
+.seg-btn[aria-pressed="true"] { background: #1976d2; border-color: rgba(144, 202, 249, 0.9); color: #fff; }
+.seg-btn:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+
+.ajuda-botoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ajuda-botoes .btn { flex: 1 1 140px; padding: 9px 12px; min-height: 42px; font-size: 0.9rem; color: var(--light-blue); }
+#ajuda-aviso { margin: 10px 0 0; font-size: 0.8rem; color: #bcdcf7; }
+
+/* modal: escolher partida */
+.sec-tit { margin: 0 0 6px; font-size: 0.95rem; }
+.sec-tit:not(:first-child) { margin-top: 16px; }
+.nivel-nome { margin: 8px 0 0; font-size: 0.85rem; color: var(--modal-sub); line-height: 1.4; }
+.nivel-nome[hidden] { display: none; }
+.modal-body .seg-btn { background: rgba(13, 60, 117, 0.06); border-color: var(--modal-line); color: var(--modal-title); }
+.modal-body .seg-btn[aria-pressed="true"] { background: #1976d2; border-color: #1976d2; color: #fff; }
+
+.linha-num { display: flex; flex-wrap: wrap; gap: 8px; }
+
+#num-jogo {
+    flex: 1 1 110px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 2px solid var(--modal-line);
+    background: transparent;
+    color: var(--modal-text);
+    font: inherit;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+#num-jogo:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+.linha-num .btn { flex: 1 1 100px; padding: 8px 10px; min-height: 44px; font-size: 0.9rem; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 8px; }
+
+.tile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px 8px 8px;
+    text-align: left;
+    font: inherit;
+    color: var(--modal-text);
+    background: rgba(13, 60, 117, 0.05);
+    border: 2px solid var(--modal-line);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.tile:active { transform: scale(0.985); }
+.tile:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+.tile[aria-current="true"] { border-color: #1976d2; background: rgba(25, 118, 210, 0.12); }
+.tile-mini { flex-shrink: 0; width: 56px; height: 56px; display: block; }
+.tile-mini .mini { display: block; width: 100%; height: 100%; }
+.tile-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.tile-nome { font-weight: 800; font-size: 1rem; color: var(--modal-title); overflow-wrap: anywhere; line-height: 1.15; }
+.tile-dif { font-size: 0.78rem; font-weight: 700; color: var(--modal-sub); }
+.tile-desc { font-size: 0.82rem; line-height: 1.3; color: var(--modal-text); }
+
+/* miniaturas (cores próprias, claras e escuras) */
+.mini .m-fundo { fill: #f7fbff; }
+.mini .m-diag { fill: #b9e2c8; }
+.mini .m-fina { stroke: #9fb8cf; stroke-width: 0.5; fill: none; }
+.mini .m-grossa { stroke: #174a7c; stroke-width: 1.4; fill: none; }
+.mini .m-borda { stroke: #174a7c; stroke-width: 1.6; fill: none; }
+html[data-tema="escuro"] .mini .m-fundo { fill: #0d1f33; }
+html[data-tema="escuro"] .mini .m-diag { fill: #1b5a44; }
+html[data-tema="escuro"] .mini .m-fina { stroke: #3a5877; }
+html[data-tema="escuro"] .mini .m-grossa, html[data-tema="escuro"] .mini .m-borda { stroke: #8fc2ee; }
+#modo-mini .mini { border-radius: 4px; }
+
+/* Como Jogar */
+.abas { display: flex; gap: 6px; padding: 10px 24px 0; border-bottom: 1px solid var(--modal-line); }
+
+.aba {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 8px;
+    border: 2px solid var(--modal-line);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    background: transparent;
+    color: var(--modal-sub);
+    font: inherit;
+    font-weight: 800;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.aba[aria-selected="true"] { background: #1976d2; border-color: #1976d2; color: #fff; }
+.aba:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; }
+.modal-body[hidden] { display: none; }
+
+.texto-ajuda h3 { margin: 16px 0 4px; font-size: 1.05rem; }
+.texto-ajuda h3:first-child { margin-top: 0; }
+.texto-ajuda h4 { margin: 12px 0 2px; font-size: 0.95rem; }
+.texto-ajuda ul, .texto-ajuda ol { padding-left: 1.2em; }
+.texto-ajuda li + li { margin-top: 4px; }
+.texto-ajuda .nota { padding: 8px 10px; border: 1px solid rgba(249, 168, 37, 0.7); border-radius: 8px; background: rgba(249, 168, 37, 0.14); font-size: 0.9rem; }
+
+#painel-tec details { border: 1px solid var(--modal-line); border-radius: 10px; padding: 0 12px; background: rgba(13, 60, 117, 0.04); scroll-margin-top: 8px; }
+#painel-tec details + details { margin-top: 8px; }
+#painel-tec details:first-of-type { margin-top: 12px; }
+
+#painel-tec summary {
+    cursor: pointer;
+    padding: 11px 0;
+    font-weight: 800;
+    color: var(--modal-title);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+#painel-tec summary small { margin-left: auto; font-weight: 600; font-size: 0.78rem; color: var(--modal-sub); text-align: right; }
+#painel-tec summary::-webkit-details-marker { display: none; }
+#painel-tec summary::after { content: "+"; font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
+#painel-tec details[open] summary::after { content: "\2212"; }
+#painel-tec details[open] { padding-bottom: 12px; }
+#painel-tec summary:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 2px; border-radius: 6px; }
+.tec-corpo > * + * { margin-top: 8px; }
+
+.ex { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+.ex-svg { flex: 0 1 240px; width: 240px; max-width: 100%; height: auto; border-radius: 4px; }
+.ex-lado { flex: 1 1 200px; min-width: 0; }
+.ex-lado p { margin: 0 0 6px; }
+.ex-leg { font-size: 0.85rem; font-weight: 700; }
+.ex-cands { margin: 0; padding-left: 1.1em; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.ex-cands .sai, .texto-ajuda .sai { color: #b3261e; font-weight: 800; text-decoration: line-through; }
+
+.e-fundo { fill: #f7fbff; }
+.e-foco { fill: #ffd94d; }
+.e-alvo { fill: #ffb3b3; }
+.e-fina { stroke: #aac2d8; stroke-width: 0.35; fill: none; }
+.e-grossa { stroke: #174a7c; stroke-width: 1; fill: none; }
+.e-borda { stroke: #174a7c; stroke-width: 1.2; fill: none; }
+.e-num { fill: #0b2a4a; font: 700 6.6px system-ui, sans-serif; text-anchor: middle; }
+.e-novo { fill: #0a6b2f; font: 900 7.2px system-ui, sans-serif; text-anchor: middle; }
+html[data-tema="escuro"] .e-fundo { fill: #0d1f33; }
+html[data-tema="escuro"] .e-foco { fill: #7a6200; }
+html[data-tema="escuro"] .e-alvo { fill: #7a2f2f; }
+html[data-tema="escuro"] .e-fina { stroke: #3a5877; }
+html[data-tema="escuro"] .e-grossa, html[data-tema="escuro"] .e-borda { stroke: #8fc2ee; }
+html[data-tema="escuro"] .e-num { fill: #e6f2fd; }
+html[data-tema="escuro"] .e-novo { fill: #7ee2a0; }
+html[data-tema="escuro"] .ex-cands .sai, html[data-tema="escuro"] .texto-ajuda .sai { color: #ff9b92; }
+
+/* ==========================================================================
+   7. Modo escuro
+   ========================================================================== */
+html[data-tema="escuro"] .tile { background: rgba(144, 202, 249, 0.07); }
+html[data-tema="escuro"] .tile[aria-current="true"] { background: rgba(25, 118, 210, 0.3); }
+html[data-tema="escuro"] #painel-tec details { background: rgba(144, 202, 249, 0.06); }
+html[data-tema="escuro"] .modal-body .seg-btn { background: rgba(144, 202, 249, 0.08); }
+html[data-tema="escuro"] .modal-body .seg-btn[aria-pressed="true"] { background: #1976d2; }
+
+/* ==========================================================================
+   8. Responsividade
+   ========================================================================== */
+@media (hover: hover) {
+    .seg-btn:hover:not(:disabled), .tool-btn:hover:not(:disabled), #modo-btn:hover, .pad-btn:hover, button.hud-box:hover {
+        background: rgba(227, 242, 253, 0.2);
+        border-color: rgba(144, 202, 249, 0.85);
+    }
+
+    .seg-btn[aria-pressed="true"]:hover:not(:disabled), .tool-btn[aria-pressed="true"]:hover:not(:disabled), .pad-btn.nota-on:hover { background: #1976d2; }
+    .modal-body .seg-btn:hover:not(:disabled) { background: rgba(25, 118, 210, 0.14); }
+    .modal-body .seg-btn[aria-pressed="true"]:hover:not(:disabled) { background: #1976d2; }
+    .tile:hover { border-color: #1976d2; }
+    .cel:hover:not(.sel) { filter: brightness(0.96); }
+}
+
+/* Tela deitada e computador: controles na coluna da esquerda, tabuleiro à direita (fixo na janela) */
+@media (orientation: landscape) and (min-width: 540px) {
+    :root { --painel: clamp(200px, 27vw, 300px); }
+
+    main { padding: 8px 8px 4px; }
+
+    #game-area {
+        display: grid;
+        grid-template-columns: var(--painel) minmax(0, 1fr);
+        grid-template-rows: repeat(7, auto) 1fr;
+        column-gap: 12px;
+        row-gap: 8px;
+        align-items: start;
+    }
+
+    #modo-btn, #hud, #message-container, #entrada, #acoes, #restart-btn, #config { grid-column: 1; }
+    #modo-btn { grid-row: 1; }
+    #hud { grid-row: 2; }
+    #entrada { grid-row: 3; }
+    #acoes { grid-row: 4; }
+    #message-container { grid-row: 5; min-height: 0; }
+    #restart-btn { grid-row: 6; }
+    #config { grid-row: 7; padding-bottom: 0; }
+    #game-area #mesa-box { grid-column: 2; grid-row: 1 / -1; position: sticky; top: calc(var(--header-height, 60px) + 10px); align-self: start; margin: 0; }
+
+    #modo-btn { min-height: 48px; gap: 8px; padding: 5px 8px 5px 6px; }
+    #modo-mini { width: 38px; height: 38px; }
+    #modo-nome { font-size: 0.95rem; }
+    .modo-trocar .ic { display: none; }
+    .modo-trocar { font-size: 0; }
+    #hud { gap: 6px; }
+    .hud-box { min-height: 46px; padding: 4px 4px; }
+    .hud-box b { font-size: 1.05rem; }
+    .hud-label { letter-spacing: 0; }
+    #restart-btn { padding: 8px 12px; min-height: 42px; }
+    #message-area { font-size: 0.82rem; }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+    :root { --header-height: 48px; }
+    header h1 { font-size: 1.15rem; }
+    .hud-label { font-size: 0.6875rem; text-transform: none; }
+    .tela-card { padding: 10px 12px; gap: 5px; }
+    .tela-card h2 { font-size: 1.15rem; }
+    .tela-card p { font-size: 0.85rem; line-height: 1.35; }
+    #tela { padding: 6px; }
+    .pad-btn { min-height: 40px; }
+    .pad-btn b { font-size: 1.2rem; }
+    .tool-btn { min-height: 40px; }
+}
+
+@media (max-width: 420px) {
+    main { padding: 8px 4px 4px; }
+    .rotulo-cfg { font-size: 0.72rem; }
+    .seg-btn { font-size: 0.8rem; padding: 4px 2px; }
+    .hud-box b { font-size: 1.1rem; }
+    .abas { padding: 8px 14px 0; }
+    .seg { max-width: none; }
+}
+
+@media (max-width: 300px) {
+    header { padding: 0 8px; gap: 6px; }
+    header h1 { font-size: 1.12rem; }
+    #modo-btn { gap: 8px; padding: 6px 8px 6px 6px; }
+    #modo-mini { width: 40px; height: 40px; }
+    #modo-nome { font-size: 1rem; }
+    .modo-trocar { font-size: 0; }
+    .hud-box { padding: 6px 4px; }
+    .hud-label { font-size: 0.6875rem; letter-spacing: 0; text-transform: none; }
+    .hud-box b { font-size: 1rem; }
+    .tile { flex-direction: column; align-items: flex-start; padding: 8px; gap: 6px; }
+    .tile-txt { width: 100%; }
+    .abas { padding: 8px 8px 0; gap: 4px; }
+    .aba { font-size: 0.75rem; padding: 8px 2px; }
+    #painel-tec summary small { display: none; }
+    .acoes-bts .btn { flex-basis: 100%; }
+    .ex-svg { flex-basis: 100%; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #tela, .cel.pulso, #tab.onda .cel { animation: none; }
+}
+
+html[data-reduzir="1"] #tela,
+html[data-reduzir="1"] .cel.pulso,
+html[data-reduzir="1"] #tab.onda .cel { animation: none; }
